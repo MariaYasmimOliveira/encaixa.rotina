@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Encaixa: organize sua rotina entre trabalho e casa</title>
+<meta name="description" content="Planejador de tarefas e catálogo de 44 aplicativos e plataformas de organização, em 22 categorias. Ação de extensão da UFMS.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script>
+tailwind.config = { theme: { extend: { fontFamily: {
+  head: ['"Bricolage Grotesque"','"Trebuchet MS"','sans-serif'],
+  body: ['"Source Sans 3"','"Segoe UI"','Arial','sans-serif'] } } } };
+</script>
+<style>
+/* Paleta: #4b3e4d  #1e8c93  #dbd8a2  #c4ac30  #d74f33 (com variações de contraste para texto pequeno) */
+:root{color-scheme:light;--bg:#dbd8a2;--surface:#f8f7e6;--ink:#4b3e4d;--muted:#5a4d5c;--line:#b5b16a;--accent:#1e8c93;
+  --link:#0f5a60;--btn:#4b3e4d;--btn-ink:#fff;--mustard:#c4ac30;--coral-ink:#b3391f;--soft:#e9e6b4}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:1rem}
+.top{border-top:5px solid var(--c,var(--mustard))}
+.btn{display:inline-block;background:var(--btn);color:var(--btn-ink);font-weight:600;border-radius:.6rem;padding:.7rem 1.2rem;text-decoration:none;border:0;cursor:pointer;font-family:inherit;font-size:1rem}
+.btn:hover{filter:brightness(1.15)}
+.btn2{display:inline-block;border:2px solid var(--accent);color:var(--ink);font-weight:600;border-radius:.6rem;padding:.6rem 1.1rem;text-decoration:none}
+.field{width:100%;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:.6rem;padding:.6rem .8rem;font:inherit}
+.link{color:var(--link);font-weight:600;text-decoration:underline;text-underline-offset:4px}
+.muted{color:var(--muted)}
+.badge{display:inline-flex;align-items:center;gap:.35rem;border:1px solid var(--line);background:var(--soft);border-radius:999px;padding:.05rem .6rem;font-size:.75rem;font-weight:600}
+.dot{width:.55rem;height:.55rem;border-radius:50%;display:inline-block}
+.late{color:var(--coral-ink);font-weight:600}
+.ico{display:flex;align-items:center;justify-content:center;overflow:hidden;font-family:"Bricolage Grotesque","Trebuchet MS",sans-serif;font-weight:700;border:2px solid var(--line);flex:none}
+.tile{display:flex;flex-direction:column;align-items:center;gap:.6rem;padding:1rem .75rem;text-align:center;cursor:pointer;font:inherit;color:inherit;width:100%}
+.tile:hover{border-color:var(--accent)}
+.menu-btn{display:block;width:100%;text-align:left;padding:.55rem .8rem;border-radius:.5rem;border:0;border-left:4px solid transparent;background:none;color:inherit;font:inherit;cursor:pointer}
+.menu-btn:hover{background:var(--soft)}
+.menu-btn[aria-current="true"]{background:var(--soft);border-left-color:var(--c,var(--accent));font-weight:600}
+dialog{background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:1rem;padding:0;max-width:44rem;width:calc(100% - 1.5rem);max-height:90vh}
+dialog::backdrop{background:rgba(42,34,45,.65)}
+.stripe{height:6px;background:linear-gradient(90deg,#4b3e4d 0 25%,#1e8c93 25% 50%,#c4ac30 50% 75%,#d74f33 75% 100%)}
+.mark::before{content:"";display:inline-block;width:.65rem;height:1.1em;border-radius:.2rem;background:var(--c,#1e8c93);margin-right:.6rem;vertical-align:-.15em}
+.hero{position:relative;overflow:hidden;background:#4b3e4d;color:#f8f7e6}
+.hero>*:not(.bola){position:relative}
+.hero::before,.hero::after,.bola{content:"";position:absolute;border-radius:50%;pointer-events:none}
+.hero::before{width:13rem;height:13rem;background:#1e8c93;right:-3.5rem;top:-4rem}
+.hero::after{width:6rem;height:6rem;background:#d74f33;right:5rem;bottom:-2.5rem}
+.bola{width:3rem;height:3rem;background:#c4ac30;right:11rem;top:2.5rem}
+.hero p{color:#e9e6b4}
+.hero .btn{background:#dbd8a2;color:#4b3e4d}
+.hero .btn2{border-color:#dbd8a2;color:#f8f7e6}
+@media (max-width:1023px){.hero::before,.hero::after,.bola{display:none}}
+h1,h2,h3,h4{font-family:"Bricolage Grotesque","Trebuchet MS",sans-serif;line-height:1.15;margin:0}
+</style>
+</head>
+<body class="font-body text-[17px] leading-relaxed">
+<div class="stripe" aria-hidden="true"></div>
+<div class="max-w-6xl mx-auto px-5">
+ 
+  <header class="flex items-center justify-between gap-4 py-5">
+    <a href="#topo" id="topo" class="flex items-center gap-3" style="text-decoration:none;color:inherit">
+      <img id="logo" src="img/logo.png" alt="Logo da Encaixa" class="h-11 w-auto">
+      <span id="marca" class="font-head font-bold text-2xl">Encaixa</span>
+    </a>
+    <nav class="flex gap-4 text-sm font-semibold" aria-label="Seções">
+      <a class="link" href="#planejador">Planejador</a>
+      <a class="link" href="#catalogo">Catálogo</a>
+      <a class="link" href="#avaliacao">Avaliação</a>
+    </nav>
+  </header>
+ 
+  <section class="hero rounded-3xl p-6 sm:p-10 my-6">
+    <span class="bola" aria-hidden="true"></span>
+    <h1 class="font-bold text-4xl sm:text-5xl max-w-[20ch]">Encaixe o trabalho e a casa no seu dia</h1>
+    <p class="mt-4 max-w-[58ch] text-lg">Um planejador simples para suas tarefas e prazos, e um catálogo com <strong id="total">44</strong> aplicativos e plataformas de organização para você escolher o que combina com a sua rotina.</p>
+    <div class="mt-6 flex flex-wrap gap-3">
+      <a href="#planejador" class="btn">Montar meu planejador</a>
+      <a href="#catalogo" class="btn2">Ver o catálogo</a>
+    </div>
+  </section>
+ 
+  <main class="space-y-12 pb-10">
+ 
+    <section id="planejador" aria-labelledby="t-plan" class="card top p-5 sm:p-6 max-w-4xl" style="--c:#1e8c93">
+      <h2 id="t-plan" class="font-bold text-2xl mark" style="--c:#1e8c93">Planejador de tarefas e prazos</h2>
+      <p class="muted mt-1">Anote o que precisa fazer, escolha onde a tarefa se encaixa e defina o prazo.</p>
+      <form id="form" class="mt-4 grid gap-3 sm:grid-cols-[1fr_auto_auto_auto] sm:items-end">
+        <div><label for="titulo" class="block text-sm font-semibold mb-1">Tarefa</label>
+          <input id="titulo" class="field" required maxlength="80" placeholder="Ex.: entregar relatório"></div>
+        <div><label for="tipo" class="block text-sm font-semibold mb-1">Onde se encaixa</label>
+          <select id="tipo" class="field"><option>Trabalho</option><option>Casa</option><option>Pessoal</option></select></div>
+        <div><label for="prazo" class="block text-sm font-semibold mb-1">Prazo</label>
+          <input id="prazo" type="date" class="field"></div>
+        <button class="btn">Adicionar</button>
+      </form>
+      <p id="resumo" class="mt-5 text-sm font-semibold muted" aria-live="polite"></p>
+      <ul id="lista" class="mt-2 space-y-2"></ul>
+      <p class="mt-4 text-sm muted">Suas tarefas ficam salvas só neste aparelho. Nenhum dado é enviado para a internet.</p>
+    </section>
+ 
+    <section id="catalogo" aria-labelledby="t-cat">
+      <h2 id="t-cat" class="font-bold text-2xl mark" style="--c:#c4ac30">Catálogo de aplicativos e plataformas de organização</h2>
+      <p class="muted mt-1">Escolha uma categoria e toque em um item para ver se é um aplicativo ou uma plataforma, para que serve e o que dá para fazer.</p>
+      <div class="mt-5 grid gap-6 lg:grid-cols-[17rem_1fr]">
+        <div>
+          <label for="catsel" class="block text-sm font-semibold mb-1 lg:hidden">Categoria</label>
+          <select id="catsel" class="field lg:hidden"></select>
+          <nav aria-label="Categorias" class="card p-2 hidden lg:block lg:sticky lg:top-4 lg:max-h-[80vh] lg:overflow-auto"><ul id="menu" class="space-y-0.5"></ul></nav>
+        </div>
+        <div>
+          <p id="contagem" class="text-sm font-semibold muted" aria-live="polite"></p>
+          <div id="grupos" class="mt-3 space-y-8"></div>
+        </div>
+      </div>
+    </section>
+ 
+    <section id="avaliacao" aria-labelledby="t-aval" class="card top p-5 sm:p-6 max-w-4xl" style="--c:#d74f33">
+      <h2 id="t-aval" class="font-bold text-2xl mark" style="--c:#d74f33">Avaliação: a Encaixa ajudou você?</h2>
+      <p class="mt-1">Depois de usar, responda a um questionário rápido. Sua opinião ajuda a melhorar a plataforma.</p>
+      <a id="forms" href="#" target="_blank" rel="noopener" class="btn mt-4">Ir para a avaliação (2 min)</a>
+    </section>
+  </main>
+ 
+  <footer class="pb-8 text-sm muted space-y-1">
+    <div class="stripe rounded-full mb-6" aria-hidden="true"></div>
+    <p>A Encaixa é uma ação de extensão da UFMS, da disciplina Análise Organizacional e Soluções Tecnológicas.</p>
+    <p>Desenvolvida por Maria Yasmim de Oliveira Simão.</p>
+  </footer>
+</div>
+ 
+<dialog id="det" aria-labelledby="det-nome">
+  <div class="p-5 sm:p-6">
+    <div class="flex items-start justify-between gap-4">
+      <div class="flex items-center gap-4 min-w-0">
+        <div id="det-ico"></div>
+        <div class="min-w-0">
+          <h3 id="det-nome" class="text-2xl font-bold"></h3>
+          <p class="mt-1"><span id="det-tipo" class="badge"></span></p>
+          <p id="det-cat" class="muted text-sm mt-1"></p>
+        </div>
+      </div>
+      <button id="det-x" class="btn2" aria-label="Fechar">Fechar</button>
+    </div>
+    <h4 class="mt-5 text-lg font-bold">Para que serve</h4>
+    <p id="det-serve" class="mt-1"></p>
+    <h4 class="mt-4 text-lg font-bold">O que você pode fazer</h4>
+    <p id="det-faz" class="mt-1"></p>
+    <div id="det-link" class="mt-5"></div>
+  </div>
+</dialog>
+ 
+<script>
+var FORMS_URL = "https://docs.google.com/forms/d/e/1FAIpQLScDahcM2rxudh3p-TbVb1b77clrfQipX2nlHkFQOQgBDMeCWw/viewform";
+ 
+document.getElementById("forms").href = FORMS_URL;
+function el(t, c, x){ var n = document.createElement(t); if(c) n.className = c; if(x !== undefined) n.textContent = x; return n; }
+ 
+/* ---------- Logo ---------- */
+var logo = document.getElementById("logo");
+logo.onload = function(){ document.getElementById("marca").style.display = "none"; };
+logo.onerror = function(){ logo.style.display = "none"; };
+ 
+/* ---------- Tipo: quem não estiver nas duas listas abaixo é "Aplicativo e plataforma" ---------- */
+var SO_APP = ["Obsidian","Joplin","Loop Habit Tracker","Daylio","Diarium","Koabit","LifeSimplified","BuyBye","EchoList","KeePass","Bookmory","Libby","Nike Training Club","11pets","Planta","Greg"];
+var SO_PLATAFORMA = ["Excalidraw","Actual Budget"];
+function tipoDe(nome){
+  if (SO_APP.indexOf(nome) >= 0) return "Aplicativo";
+  if (SO_PLATAFORMA.indexOf(nome) >= 0) return "Plataforma";
+  return "Aplicativo e plataforma";
+}
+ 
+/* ---------- Catálogo: [nome, para que serve, o que dá para fazer, link opcional] ---------- */
+var CAT = [
+["Organização pessoal e produtividade",[
+ ["Notion","Centralizar tarefas, projetos, rotina, metas, anotações e informações.","Criar páginas e listas para organizar o dia, acompanhar metas e guardar informações importantes em um só lugar.","https://www.notion.so"],
+ ["Microsoft To Do","Listas de tarefas, lembretes, prazos e atividades recorrentes.","Criar listas, definir a data de cada tarefa e repetir o que acontece sempre, como pagar uma conta todo mês.","https://to-do.office.com"]]],
+["Agenda e compromissos",[
+ ["Google Agenda","Eventos, compromissos, lembretes e calendários.","Marcar compromissos, receber avisos no celular e separar calendários, como o do trabalho e o da casa.","https://calendar.google.com"],
+ ["TimeTree","Calendários compartilhados entre familiares, amigos e grupos.","Combinar compromissos com quem mora com você e ver tudo em um calendário em comum.","https://timetreeapp.com"]]],
+["Anotações e conhecimento",[
+ ["Obsidian","Notas conectadas, pesquisas, ideias e organização do conhecimento.","Escrever anotações e ligar uma à outra, formando uma rede de ideias e pesquisas.","https://obsidian.md"],
+ ["Joplin","Cadernos, anotações, documentos e listas.","Organizar anotações em cadernos e criar listas e documentos.","https://joplinapp.org"]]],
+["Hábitos e metas pessoais",[
+ ["Loop Habit Tracker","Acompanhamento de hábitos, frequência e evolução.","Marcar os dias em que cumpriu um hábito e ver como a sua frequência evolui.","https://loophabits.org"],
+ ["Habitica","Transformar tarefas e hábitos em um jogo.","Cumprir tarefas e hábitos para ganhar pontos, como em um jogo, o que ajuda a manter a motivação.","https://habitica.com"]]],
+["Diário e autoconhecimento",[
+ ["Daylio","Diário, registro de atividades e acompanhamento do humor.","Anotar como se sentiu e o que fez no dia e acompanhar o humor ao longo do tempo.","https://daylio.net"],
+ ["Diarium","Diário pessoal, registros, memórias e entradas organizadas por data.","Escrever sobre cada dia e reencontrar as lembranças pela data.","https://diariumapp.com"]]],
+["Organização doméstica",[
+ ["Koabit","Divisão de tarefas, calendário e gestão da casa.","Combinar quem faz o quê na casa e acompanhar a rotina em um calendário."],
+ ["LifeSimplified","Organização familiar, tarefas domésticas e compras.","Organizar as tarefas da casa e da família e as listas de compras."]]],
+["Compras e listas de supermercado",[
+ ["BuyBye","Listas compartilhadas, produtos, receitas e compras.","Montar listas de compras que várias pessoas podem usar e reunir produtos e receitas."],
+ ["Google Keep","Listas rápidas de compras, itens e lembretes.","Anotar rapidamente o que falta comprar, marcar o que já pegou e criar lembretes.","https://keep.google.com"]]],
+["Alimentação e refeições",[
+ ["Mealime","Planejamento de refeições e receitas.","Planejar as refeições da semana e consultar receitas.","https://www.mealime.com"],
+ ["EchoList","Receitas, planejamento de refeições e listas de ingredientes.","Guardar receitas, planejar as refeições e montar a lista de ingredientes."]]],
+["Controle financeiro",[
+ ["Actual Budget","Orçamento pessoal, planejamento e controle de despesas.","Definir quanto pode gastar em cada categoria e registrar as despesas.","https://actualbudget.org"],
+ ["Google Planilhas","Controle de receitas, gastos, contas e planejamento financeiro personalizado.","Montar a sua própria planilha de gastos e contas e somar o total do mês.","https://sheets.google.com"]]],
+["Estudos e aprendizado",[
+ ["Anki","Flashcards e revisão espaçada.","Criar cartões de estudo e revisar nos intervalos certos para memorizar melhor.","https://apps.ankiweb.net"],
+ ["Quizlet","Cartões de estudo e memorização.","Criar cartões para estudar e treinar o conteúdo.","https://quizlet.com"]]],
+["Organização de projetos e trabalho",[
+ ["Trello","Quadros, cartões, etapas e acompanhamento de projetos.","Criar um quadro com listas, um cartão para cada tarefa, e mover os cartões conforme o trabalho avança.","https://trello.com"],
+ ["ClickUp","Gestão de tarefas, projetos, documentos e equipes.","Organizar tarefas e projetos e guardar documentos, sozinha ou com uma equipe.","https://clickup.com"]]],
+["Mapas mentais e ideias",[
+ ["Excalidraw","Desenhos, diagramas, fluxogramas e mapas de ideias.","Rabiscar ideias e montar diagramas e fluxogramas em um quadro livre.","https://excalidraw.com"],
+ ["Miro","Mapas mentais, brainstorms e planejamento colaborativo.","Montar mapas mentais e fazer brainstorms, sozinha ou com outras pessoas.","https://miro.com"]]],
+["Organização de viagens",[
+ ["Wanderlog","Roteiros, passeios, hospedagens e itinerários.","Montar o roteiro da viagem, dia a dia, com passeios e hospedagens.","https://wanderlog.com"],
+ ["TripIt","Reservas, voos e organização de viagens.","Reunir reservas e voos em um só lugar e ver o itinerário completo.","https://www.tripit.com"]]],
+["Documentos e arquivos",[
+ ["Google Drive","Armazenamento, pastas e compartilhamento de arquivos.","Guardar arquivos na nuvem, organizar em pastas e compartilhar com outras pessoas.","https://drive.google.com"],
+ ["Proton Drive","Armazenamento e compartilhamento com foco em privacidade.","Guardar e compartilhar arquivos com mais proteção da sua privacidade.","https://proton.me/drive"]]],
+["Senhas e acessos",[
+ ["Bitwarden","Armazenamento e gerenciamento de senhas.","Guardar todas as senhas em um só lugar, protegidas por uma senha principal.","https://bitwarden.com"],
+ ["KeePass","Gerenciamento local de senhas e credenciais.","Guardar suas senhas em um arquivo no próprio aparelho.","https://keepass.info"]]],
+["Organização de leituras",[
+ ["Bookmory","Acompanhamento de livros, metas e progresso de leitura.","Registrar o que está lendo, definir metas de leitura e ver o seu progresso.","https://bookmory.com"],
+ ["Libby","Empréstimos e organização de livros digitais de bibliotecas.","Pegar livros digitais emprestados de bibliotecas e organizar as suas leituras.","https://libbyapp.com"]]],
+["Organização de eventos",[
+ ["Partiful","Criação de eventos, convites e confirmações.","Criar um evento, enviar o convite e ver quem confirmou presença.","https://partiful.com"],
+ ["Doodle","Organização de horários e disponibilidade dos participantes.","Propor horários e descobrir quando todo mundo está disponível.","https://doodle.com"]]],
+["Controle de tempo",[
+ ["Clockify","Registro de horas trabalhadas e tempo por atividade.","Marcar quanto tempo você gasta em cada atividade e somar as horas trabalhadas.","https://clockify.me"],
+ ["Toggl Track","Rastreamento de tempo e relatórios de produtividade.","Cronometrar atividades e ver relatórios de como você usa o seu tempo.","https://toggl.com/track"]]],
+["Organização de referências e links",[
+ ["Raindrop.io","Salvar, categorizar e organizar links, artigos e páginas.","Salvar links e organizá-los em coleções para encontrar depois.","https://raindrop.io"],
+ ["Pinterest","Coleções de inspirações, imagens e referências.","Salvar imagens e ideias em coleções por assunto.","https://www.pinterest.com"]]],
+["Organização de atividades físicas",[
+ ["Nike Training Club","Planejamento e acompanhamento de treinos.","Escolher treinos e acompanhar a sua rotina de exercícios.","https://www.nike.com/ntc-app"],
+ ["Strava","Registro de atividades físicas e histórico esportivo.","Registrar corridas, caminhadas e outros exercícios e ver o seu histórico.","https://www.strava.com"]]],
+["Organização de animais de estimação",[
+ ["PetDesk","Consultas, compromissos e registros veterinários.","Acompanhar consultas e compromissos do seu animal e guardar os registros veterinários.","https://petdesk.com"],
+ ["11pets","Cuidados, vacinas, medicamentos e histórico dos animais.","Anotar vacinas, medicamentos e cuidados e manter o histórico do seu animal.","https://11pets.com"]]],
+["Organização de plantas e jardinagem",[
+ ["Planta","Cuidados, identificação e lembretes para plantas.","Receber lembretes de cuidados e identificar as suas plantas.","https://getplanta.com"],
+ ["Greg","Acompanhamento do crescimento e cuidados com plantas.","Acompanhar como as suas plantas crescem e lembrar dos cuidados.","https://greg.app"]]]
+];
+var TOTAL = CAT.reduce(function(a,c){ return a + c[1].length; }, 0);
+document.getElementById("total").textContent = TOTAL;
+ 
+var ICOR = [["#1e8c93","#ffffff"],["#c4ac30","#4b3e4d"],["#d74f33","#ffffff"],["#4b3e4d","#ffffff"]];
+var atual = "todas";
+var CCOR = ["#1e8c93","#c4ac30","#d74f33","#4b3e4d"];   // cor de cada categoria (repete a cada 4)
+ 
+/* Ícone: img/icones/<arquivo>; sem arquivo, mostra a inicial em um círculo colorido */
+function icone(nome, n, tam) {
+    var arquivosIcones = {
+        "Obsidian": "Obsidian.png",
+        "Partiful": "Partiful.webp",
+        "PetDesk": "PetDesk.webp",
+        "Pinterest": "Pinterest.png",
+        "Planta": "Planta.png",
+        "Proton Drive": "Proton Drive.webp",
+        "Quizlet": "Quizlet.jpeg",
+        "Raindrop.io": "Raindrop.io.png",
+        "Strava": "Strava.png",
+        "TimeTree": "time-tree.avif",
+        "Toggl Track": "Toggl Track.png",
+        "Trello": "Trello.png",
+        "TripIt": "TripIt.png",
+        "Wanderlog": "Wanderlog.png",
+        "Doodle": "doodle.png",
+        "EchoList": "EchoList.png",
+        "Excalidraw": "Excalidraw.png",
+        "Google Drive": "Google Drive.png",
+        "Google Planilhas": "Google Planilhas.png",
+        "Google Agenda": "google-agenda.jpg",
+        "Google Keep": "google-keep.png",
+        "Greg": "Greg.png",
+        "Habitica": "Habitica.png",
+        "Joplin": "Joplin.png",
+        "KeePass": "KeePass.png",
+        "Koabit": "Koabit.png",
+        "Libby": "Libby.webp",
+        "LifeSimplified": "LifeSimplified.webp",
+        "Loop Habit Tracker": "Loop-Habit-Tracker.png",
+        "Mealime": "Mealime.webp",
+        "Microsoft To Do": "microsofttodo.png",
+        "Miro": "Miro.png",
+        "Nike Training Club": "Nike Training Club.png",
+        "Notion": "notion.webp",
+        "11pets": "11pets.jpg",
+        "Actual Budget": "Actual Budget.png",
+        "Anki": "Anki.jpeg",
+        "Bitwarden": "Bitwarden.png",
+        "Bookmory": "Bookmory.webp",
+        "BuyBye": "buybuy.png",
+        "ClickUp": "ClickUp.png",
+        "Daylio": "Daylio.webp",
+        "Diarium": "Diarium.png"
+    };
+ 
+    var w = el("div", "ico " + tam, nome.charAt(0).toUpperCase());
+    w.style.background = ICOR[n % 4][0];
+    w.style.color = ICOR[n % 4][1];
+    w.setAttribute("aria-hidden", "true");
+ 
+    var arquivo = arquivosIcones[nome];
+    if (arquivo) {
+        var im = new Image();
+        im.alt = "";
+        im.onload = function() {
+            w.textContent = "";
+            w.style.background = "var(--surface)";
+            im.style.cssText = "width:100%;height:100%;object-fit:contain;border-radius:inherit;";
+            w.appendChild(im);
+        };
+        im.onerror = function() { im.remove(); };
+        im.src = "img/icones/" + encodeURIComponent(arquivo);
+    }
+    return w;
+}
+ 
+/* ---------- Menu lateral ---------- */
+var menu = document.getElementById("menu"), sel = document.getElementById("catsel");
+function itens(){ return [["todas","Todas as categorias (" + TOTAL + ")"]].concat(CAT.map(function(c,i){ return [String(i), c[0]]; })); }
+function renderMenu(){
+  menu.innerHTML = ""; sel.innerHTML = "";
+  itens().forEach(function(it){
+    var li = el("li"); var b = el("button", "menu-btn"); b.type = "button";
+    var cor = it[0] === "todas" ? "#4b3e4d" : CCOR[Number(it[0]) % 4];
+    b.style.setProperty("--c", cor);
+    var dt = el("span", "dot"); dt.style.background = cor; dt.style.marginRight = ".5rem"; b.appendChild(dt); b.appendChild(document.createTextNode(it[1]));
+    b.setAttribute("aria-current", it[0] === atual ? "true" : "false");
+    b.onclick = function(){ atual = it[0]; renderMenu(); renderGrupos(); };
+    li.appendChild(b); menu.appendChild(li);
+    var o = el("option", "", it[1]); o.value = it[0]; if (it[0] === atual) o.selected = true; sel.appendChild(o);
+  });
+}
+sel.addEventListener("change", function(){ atual = sel.value; renderMenu(); renderGrupos(); });
+ 
+/* ---------- Cartões (ícone, nome e tipo) ---------- */
+function renderGrupos(){
+  var box = document.getElementById("grupos"); box.innerHTML = ""; var n = 0, idx = 0;
+  CAT.forEach(function(cat, ci){
+    var base = idx; idx += cat[1].length;
+    if (atual !== "todas" && String(ci) !== atual) return;
+    var sec = el("section"); sec.setAttribute("aria-label", cat[0]);
+    var cor = CCOR[ci % 4]; var h = el("h3", "text-xl font-bold pb-2 mark", cat[0]); h.style.setProperty("--c", cor); h.style.borderBottom = "3px solid " + cor; sec.appendChild(h);
+    var grid = el("div", "mt-4 grid gap-4 grid-cols-2 sm:grid-cols-3 xl:grid-cols-4");
+    cat[1].forEach(function(app, ai){
+      var tipo = tipoDe(app[0]);
+      n++;
+      var b = el("button", "card tile"); b.type = "button"; b.setAttribute("aria-haspopup", "dialog"); b.style.borderTop = "5px solid " + cor;
+      b.appendChild(icone(app[0], base + ai, "w-16 h-16 rounded-2xl text-3xl"));
+      b.appendChild(el("span", "font-semibold", app[0]));
+      b.appendChild(el("span", "badge", tipo));
+      b.onclick = function(){ abrir(app, cat[0], base + ai, cor); };
+      grid.appendChild(b);
+    });
+    sec.appendChild(grid); box.appendChild(sec);
+  });
+  document.getElementById("contagem").textContent = n + (n === 1 ? " item" : " itens");
+}
+ 
+/* ---------- Detalhes do item ---------- */
+var dlg = document.getElementById("det");
+ 
+function abrir(app, categoria, n, cor){
+  var ic = document.getElementById("det-ico"); ic.innerHTML = ""; ic.appendChild(icone(app[0], n, "w-16 h-16 rounded-2xl text-3xl"));
+  document.getElementById("det-nome").textContent = app[0];
+  document.getElementById("det-tipo").textContent = tipoDe(app[0]);
+  document.getElementById("det-cat").textContent = categoria;
+  document.getElementById("det-serve").textContent = app[1];
+  document.getElementById("det-faz").textContent = app[2];
+  var lk = document.getElementById("det-link"); lk.innerHTML = "";
+  if (app[3]) { var a = el("a", "btn", "Abrir " + app[0]); a.href = app[3]; a.target = "_blank"; a.rel = "noopener"; lk.appendChild(a); }
+  dlg.style.borderTop = "8px solid " + (cor || "#c4ac30");
+  dlg.showModal();
+}
+document.getElementById("det-x").onclick = function(){ dlg.close(); };
+dlg.addEventListener("click", function(e){ if (e.target === dlg) dlg.close(); });
+ 
+/* ---------- Planejador ---------- */
+var KEY = "encaixa:tarefas:v1", tarefas = [];
+try { tarefas = JSON.parse(localStorage.getItem(KEY)) || []; } catch (e) { tarefas = []; }
+function salvar(){ try { localStorage.setItem(KEY, JSON.stringify(tarefas)); } catch (e) {} }
+function hoje(){ var d = new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function fmt(s){ var p = s.split("-"); return p[2]+"/"+p[1]; }
+var COR = { Trabalho:"#1e8c93", Casa:"#c4ac30", Pessoal:"#d74f33" };
+ 
+function renderTarefas(){
+  var h = hoje();
+  var ord = tarefas.slice().sort(function(a,b){
+    if (a.feita !== b.feita) return a.feita ? 1 : -1;
+    return (a.prazo || "9999").localeCompare(b.prazo || "9999");
+  });
+  var pend = tarefas.filter(function(t){ return !t.feita; });
+  var atr = pend.filter(function(t){ return t.prazo && t.prazo < h; }).length;
+  document.getElementById("resumo").textContent = tarefas.length
+    ? pend.length + " pendente(s)" + (atr ? ", " + atr + " atrasada(s)" : "")
+    : "Nenhuma tarefa ainda. Adicione a primeira acima.";
+  var ul = document.getElementById("lista"); ul.innerHTML = "";
+  ord.forEach(function(t){
+    var li = el("li", "flex items-center gap-3 rounded-lg px-3 py-2.5"); li.style.border = "1px solid var(--line)";
+    var cb = el("input"); cb.type = "checkbox"; cb.checked = t.feita; cb.className = "h-5 w-5 shrink-0"; cb.style.accentColor = "#1e8c93";
+    cb.setAttribute("aria-label", "Concluir: " + t.titulo);
+    cb.onchange = function(){ t.feita = cb.checked; salvar(); renderTarefas(); };
+    var corpo = el("div", "min-w-0 flex-1");
+    corpo.appendChild(el("p", "break-words " + (t.feita ? "line-through muted" : "font-semibold"), t.titulo));
+    var meta = el("p", "mt-1 flex flex-wrap items-center gap-2 text-xs");
+    var b = el("span", "badge"); var d = el("span", "dot"); d.style.background = COR[t.tipo]; b.appendChild(d); b.appendChild(document.createTextNode(t.tipo)); meta.appendChild(b);
+    if (t.prazo) {
+      var txt = "Prazo " + fmt(t.prazo), cls = "muted";
+      if (!t.feita && t.prazo < h) { txt += " (atrasada)"; cls = "late"; }
+      else if (!t.feita && t.prazo === h) { txt = "Prazo hoje"; cls = "late"; }
+      meta.appendChild(el("span", cls, txt));
+    }
+    corpo.appendChild(meta);
+    var del = el("button", "link text-sm", "Excluir"); del.style.cssText = "background:none;border:0;cursor:pointer;font-family:inherit";
+    del.setAttribute("aria-label", "Excluir: " + t.titulo);
+    del.onclick = function(){ tarefas = tarefas.filter(function(x){ return x !== t; }); salvar(); renderTarefas(); };
+    li.appendChild(cb); li.appendChild(corpo); li.appendChild(del); ul.appendChild(li);
+  });
+}
+document.getElementById("form").addEventListener("submit", function(e){
+  e.preventDefault();
+  var titulo = document.getElementById("titulo").value.trim(); if (!titulo) return;
+  tarefas.push({ titulo: titulo, tipo: document.getElementById("tipo").value, prazo: document.getElementById("prazo").value, feita: false });
+  salvar(); renderTarefas(); e.target.reset(); document.getElementById("titulo").focus();
+});
+ 
+renderTarefas(); renderMenu(); renderGrupos();
+</script>
+</body>
+</html>
+ 
