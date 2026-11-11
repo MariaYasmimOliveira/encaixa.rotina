@@ -53,6 +53,10 @@ dialog::backdrop{background:rgba(42,34,45,.65)}
 .hero .btn{background:#dbd8a2;color:#4b3e4d}
 .hero .btn2{border-color:#dbd8a2;color:#f8f7e6}
 @media (max-width:1023px){.hero::before,.hero::after,.bola{display:none}}
+.chip{position:relative;border:1px solid var(--line);border-radius:999px;padding:.35rem .9rem;cursor:pointer;background:#fff;font-weight:600}
+.chip:has(input:checked){background:var(--ink);color:#fff;border-color:var(--ink)}
+.chip input{position:absolute;opacity:0;width:1px;height:1px}
+.chip:has(input:focus-visible){outline:3px solid var(--accent);outline-offset:2px}
 h1,h2,h3,h4{font-family:"Bricolage Grotesque","Trebuchet MS",sans-serif;line-height:1.15;margin:0}
 </style>
 </head>
@@ -67,6 +71,7 @@ h1,h2,h3,h4{font-family:"Bricolage Grotesque","Trebuchet MS",sans-serif;line-hei
     </a>
     <nav class="flex gap-4 text-sm font-semibold" aria-label="Seções">
       <a class="link" href="#planejador">Planejador</a>
+      <a class="link" href="#tempo">Tempo fixo</a>
       <a class="link" href="#catalogo">Catálogo</a>
       <a class="link" href="#avaliacao">Avaliação</a>
     </nav>
@@ -101,9 +106,25 @@ h1,h2,h3,h4{font-family:"Bricolage Grotesque","Trebuchet MS",sans-serif;line-hei
       <p class="mt-4 text-sm muted">Suas tarefas ficam salvas só neste aparelho. Nenhum dado é enviado para a internet.</p>
     </section>
  
+    <section id="tempo" aria-labelledby="t-tempo" class="card top p-5 sm:p-6 max-w-4xl" style="--c:#c4ac30">
+      <h2 id="t-tempo" class="font-bold text-2xl mark" style="--c:#c4ac30">Defina o seu tempo fixo</h2>
+      <p class="muted mt-1">Reserve horários que são seus em cada semana, como estudos e descanso, e veja quantas horas cada um ocupa. Dica: comece pequeno, por exemplo 1 hora de estudos em 3 dias.</p>
+      <form id="ftempo" class="mt-4 grid gap-3 sm:grid-cols-[1fr_auto_auto] sm:items-end">
+        <div><label for="ttipo" class="block text-sm font-semibold mb-1">O que você quer reservar</label><select id="ttipo" class="field"></select></div>
+        <div><label for="tini" class="block text-sm font-semibold mb-1">Início</label><input id="tini" type="time" value="19:00" required class="field"></div>
+        <div><label for="tfim" class="block text-sm font-semibold mb-1">Fim</label><input id="tfim" type="time" value="20:00" required class="field"></div>
+        <fieldset class="sm:col-span-3" style="border:0;padding:0;margin:0"><legend class="text-sm font-semibold mb-1">Dias da semana</legend><div id="tdias" class="flex flex-wrap gap-2"></div></fieldset>
+        <div class="sm:col-span-3 flex flex-wrap items-center gap-3"><button class="btn">Reservar horário</button><span id="taviso" class="text-sm late" role="alert"></span></div>
+      </form>
+      <div id="tresumo" class="mt-5 flex flex-wrap gap-2" aria-live="polite"></div>
+      <div id="tsemana" class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4"></div>
+      <p class="mt-4 text-sm muted">Seus horários ficam salvos só neste aparelho. Nenhum dado é enviado para a internet.</p>
+    </section>
+ 
     <section id="catalogo" aria-labelledby="t-cat">
       <h2 id="t-cat" class="font-bold text-2xl mark" style="--c:#c4ac30">Catálogo de aplicativos e plataformas de organização</h2>
       <p class="muted mt-1">Escolha uma categoria e toque em um item para ver se é um aplicativo ou uma plataforma, para que serve e o que dá para fazer.</p>
+      <p class="card p-3 mt-3 text-sm" style="border-left:5px solid #c4ac30">Na enquete com o grupo, a maioria das participantes disse que o maior desafio é ter <strong>tempo para estudar</strong>. Por isso, a categoria “Estudos e aprendizado” aparece primeiro, e você pode reservar horários de estudo na seção “Tempo fixo”.</p>
       <div class="mt-5 grid gap-6 lg:grid-cols-[17rem_1fr]">
         <div>
           <label for="catsel" class="block text-sm font-semibold mb-1 lg:hidden">Categoria</label>
@@ -247,6 +268,7 @@ document.getElementById("total").textContent = TOTAL;
 var ICOR = [["#1e8c93","#ffffff"],["#c4ac30","#4b3e4d"],["#d74f33","#ffffff"],["#4b3e4d","#ffffff"]];
 var atual = "todas";
 var CCOR = ["#1e8c93","#c4ac30","#d74f33","#4b3e4d"];   // cor de cada categoria (repete a cada 4)
+var DESTAQUES = ["Estudos e aprendizado"];   // categorias mais pedidas pelo grupo (enquete)
  
 /* Ícone: img/icones/<arquivo>; sem arquivo, mostra a inicial em um círculo colorido */
 function icone(nome, n, tam) {
@@ -327,6 +349,7 @@ function renderMenu(){
     var cor = it[0] === "todas" ? "#4b3e4d" : CCOR[Number(it[0]) % 4];
     b.style.setProperty("--c", cor);
     var dt = el("span", "dot"); dt.style.background = cor; dt.style.marginRight = ".5rem"; b.appendChild(dt); b.appendChild(document.createTextNode(it[1]));
+    if (it[0] !== "todas" && DESTAQUES.indexOf(CAT[Number(it[0])][0]) > -1) { var st = el("span", "badge", "Mais pedida"); st.style.marginLeft = ".4rem"; b.appendChild(st); }
     b.setAttribute("aria-current", it[0] === atual ? "true" : "false");
     b.onclick = function(){ atual = it[0]; renderMenu(); renderGrupos(); };
     li.appendChild(b); menu.appendChild(li);
@@ -337,12 +360,14 @@ sel.addEventListener("change", function(){ atual = sel.value; renderMenu(); rend
  
 /* ---------- Cartões (ícone, nome e tipo) ---------- */
 function renderGrupos(){
-  var box = document.getElementById("grupos"); box.innerHTML = ""; var n = 0, idx = 0;
+  var box = document.getElementById("grupos"); box.innerHTML = ""; var n = 0, idx = 0, pri = [], resto = [];
   CAT.forEach(function(cat, ci){
     var base = idx; idx += cat[1].length;
     if (atual !== "todas" && String(ci) !== atual) return;
     var sec = el("section"); sec.setAttribute("aria-label", cat[0]);
-    var cor = CCOR[ci % 4]; var h = el("h3", "text-xl font-bold pb-2 mark", cat[0]); h.style.setProperty("--c", cor); h.style.borderBottom = "3px solid " + cor; sec.appendChild(h);
+    var cor = CCOR[ci % 4]; var h = el("h3", "text-xl font-bold pb-2 mark", cat[0]); h.style.setProperty("--c", cor); h.style.borderBottom = "3px solid " + cor;
+    if (DESTAQUES.indexOf(cat[0]) > -1) { var bd = el("span", "badge", "Mais pedida pelo grupo"); bd.style.marginLeft = ".6rem"; bd.style.verticalAlign = "middle"; h.appendChild(bd); }
+    sec.appendChild(h);
     var grid = el("div", "mt-4 grid gap-4 grid-cols-2 sm:grid-cols-3 xl:grid-cols-4");
     cat[1].forEach(function(app, ai){
       var tipo = tipoDe(app[0]);
@@ -354,8 +379,9 @@ function renderGrupos(){
       b.onclick = function(){ abrir(app, cat[0], base + ai, cor); };
       grid.appendChild(b);
     });
-    sec.appendChild(grid); box.appendChild(sec);
+    sec.appendChild(grid); (DESTAQUES.indexOf(cat[0]) > -1 ? pri : resto).push(sec);
   });
+  pri.concat(resto).forEach(function(s){ box.appendChild(s); });
   document.getElementById("contagem").textContent = n + (n === 1 ? " item" : " itens");
 }
  
@@ -426,8 +452,66 @@ document.getElementById("form").addEventListener("submit", function(e){
   salvar(); renderTarefas(); e.target.reset(); document.getElementById("titulo").focus();
 });
  
-renderTarefas(); renderMenu(); renderGrupos();
+/* ---------- Tempo fixo ---------- */
+var DIAS = ["Seg","Ter","Qua","Qui","Sex","Sáb","Dom"];
+var TTIPOS = { "Estudos":"#1e8c93", "Descanso":"#c4ac30", "Trabalho":"#4b3e4d", "Casa":"#d74f33", "Outro":"#b5b16a" };
+var KEY2 = "encaixa:tempo:v1", blocos = [];
+try { blocos = JSON.parse(localStorage.getItem(KEY2)) || []; } catch (e) { blocos = []; }
+function salvarT(){ try { localStorage.setItem(KEY2, JSON.stringify(blocos)); } catch (e) {} }
+function minutos(s){ var p = s.split(":"); return Number(p[0]) * 60 + Number(p[1]); }
+function dur(m){ var hh = Math.floor(m / 60), r = m % 60; return hh + "h" + (r ? String(r).padStart(2, "0") : ""); }
+ 
+var tdias = document.getElementById("tdias"), ttipo = document.getElementById("ttipo");
+DIAS.forEach(function(d, i){
+  var l = el("label", "chip"), c = el("input"); c.type = "checkbox"; c.value = i;
+  l.appendChild(c); l.appendChild(document.createTextNode(d)); tdias.appendChild(l);
+});
+Object.keys(TTIPOS).forEach(function(t){ ttipo.appendChild(el("option", "", t)); });
+ 
+function renderTempo(){
+  var tot = {};
+  blocos.forEach(function(b){ tot[b.tipo] = (tot[b.tipo] || 0) + (minutos(b.fim) - minutos(b.ini)); });
+  var rs = document.getElementById("tresumo"); rs.innerHTML = "";
+  Object.keys(tot).forEach(function(t){
+    var s = el("span", "badge"), d = el("span", "dot"); d.style.background = TTIPOS[t];
+    s.appendChild(d); s.appendChild(document.createTextNode(t + ": " + dur(tot[t]) + " por semana")); rs.appendChild(s);
+  });
+  var sem = document.getElementById("tsemana"); sem.innerHTML = "";
+  DIAS.forEach(function(nome, di){
+    var c = el("div", "rounded-lg p-3"); c.style.border = "1px solid var(--line)"; c.style.background = "#fff";
+    c.appendChild(el("h3", "text-base font-bold", nome));
+    var lista = blocos.filter(function(b){ return b.dia === di; }).sort(function(a, b){ return minutos(a.ini) - minutos(b.ini); });
+    if (!lista.length) c.appendChild(el("p", "text-sm muted mt-1", "Livre"));
+    lista.forEach(function(b){
+      var r = el("div", "mt-2 flex items-start justify-between gap-2 text-sm");
+      var tx = el("span"), d = el("span", "dot"); d.style.background = TTIPOS[b.tipo]; d.style.marginRight = ".4rem";
+      tx.appendChild(d); tx.appendChild(document.createTextNode(b.ini + " às " + b.fim + " " + b.tipo)); r.appendChild(tx);
+      var x = el("button", "link", "Remover"); x.type = "button";
+      x.style.cssText = "background:none;border:0;cursor:pointer;font-family:inherit;font-size:.8rem;flex:none";
+      x.setAttribute("aria-label", "Remover " + b.tipo + " de " + nome + ", " + b.ini);
+      x.onclick = function(){ blocos = blocos.filter(function(y){ return y !== b; }); salvarT(); renderTempo(); };
+      r.appendChild(x); c.appendChild(r);
+    });
+    sem.appendChild(c);
+  });
+}
+document.getElementById("ftempo").addEventListener("submit", function(e){
+  e.preventDefault();
+  var av = document.getElementById("taviso"); av.textContent = "";
+  var dias = Array.prototype.slice.call(tdias.querySelectorAll("input:checked")).map(function(c){ return Number(c.value); });
+  var ini = document.getElementById("tini").value, fim = document.getElementById("tfim").value;
+  if (!dias.length) { av.textContent = "Escolha ao menos um dia da semana."; return; }
+  if (minutos(fim) <= minutos(ini)) { av.textContent = "O horário final precisa ser depois do inicial."; return; }
+  for (var i = 0; i < dias.length; i++) {
+    var dia = dias[i];
+    var choque = blocos.filter(function(b){ return b.dia === dia && minutos(ini) < minutos(b.fim) && minutos(fim) > minutos(b.ini); })[0];
+    if (choque) { av.textContent = "Esse horário se choca com " + choque.tipo + " (" + DIAS[dia] + ", " + choque.ini + " às " + choque.fim + ")."; return; }
+  }
+  dias.forEach(function(d){ blocos.push({ tipo: ttipo.value, dia: d, ini: ini, fim: fim }); });
+  salvarT(); renderTempo();
+});
+ 
+renderTarefas(); renderMenu(); renderGrupos(); renderTempo();
 </script>
 </body>
 </html>
- 
